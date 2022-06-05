@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\post;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +16,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+/* Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+}); */
+
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+], function ($router) {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::get('/user-profile', [AuthController::class, 'userProfile']);    
 });
+
+Route::group([
+    'middleware' => 'jwt',
+    'prefix' => 'post'
+], function ($router) {
+    Route::post('/create', [post::class, 'create']);
+    Route::get('/like/{id}', [post::class, 'like']);
+    Route::get('/dislike/{id}', [post::class, 'dislike']);
+    Route::post('/comment/{id}', [post::class, 'commnets']);
+    Route::get('/all/post', [AuthController::class, 'allpost']); 
+    Route::get('/my/post', [AuthController::class, 'mypost']); 
+    Route::get('/{uid}/other/post', [AuthController::class, 'otherpsot']);        
+});
+
